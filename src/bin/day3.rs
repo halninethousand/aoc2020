@@ -1,5 +1,5 @@
 fn main() {
-    let input: Vec<String> = include_str!("../data/day3.txt").lines()
+    let input: Vec<String> = include_str!("../../data/day3.txt").lines()
                                                              .map(|x| x.to_string())
                                                              .collect();
 

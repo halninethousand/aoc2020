@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 fn main() {
-    let mut input: Vec<String> = include_str!("../data/day8.txt").split("\r\n").map(|x| x.to_owned()).collect();
+    let mut input: Vec<String> = include_str!("../../data/day8.txt").split("\r\n").map(|x| x.to_owned()).collect();
 
     println!("{:?}", input);
     

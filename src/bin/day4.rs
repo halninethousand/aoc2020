@@ -3,7 +3,7 @@ use std::collections::HashMap;
 fn main() {
     //let input: Vec<String> = include_str!("../data/current.txt").lines().map(|line| line.to_owned()).collect();
 
-    let input: Vec<&str> = include_str!("../data/day4.txt").split("\r\n\r").map(|x| x.trim()).collect();
+    let input: Vec<&str> = include_str!("../../data/day4.txt").split("\r\n\r").map(|x| x.trim()).collect();
 
 
     let eyes: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];

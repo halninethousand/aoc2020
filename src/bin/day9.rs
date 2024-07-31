@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use itertools::Itertools;
 
 fn main() {
-    let input: Vec<u64> = include_str!("../data/day9.txt")
+    let input: Vec<u64> = include_str!("../../data/day9.txt")
         .split("\r\n")
         .filter_map(|x| x.parse().ok())
         .collect();

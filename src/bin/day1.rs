@@ -1,7 +1,7 @@
 use itertools::Itertools;
 
 fn main() {
-    let input: Vec<u32> = include_str!("../data/day1.txt").lines().map(|x| x.parse().unwrap()).collect();
+    let input: Vec<u32> = include_str!("../../data/day1.txt").lines().map(|x| x.parse().unwrap()).collect();
 
     for pair in input.iter().combinations(2) {
         let sum: u32 = pair.clone().into_iter().sum(); 

@@ -1,5 +1,5 @@
 fn main() {
-    let mut input: Vec<u64> = include_str!("../data/day10.txt")
+    let mut input: Vec<u64> = include_str!("../../data/day10.txt")
         .lines()
         .filter_map(|x| x.parse().ok())
         .collect();

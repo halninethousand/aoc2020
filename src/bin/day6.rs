@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::collections::HashMap;
 
 fn main() {
-    let input: Vec<String> = include_str!("../data/day6.txt").split("\r\n\r").map(|x| x.trim().to_owned()).collect();
+    let input: Vec<String> = include_str!("../../data/day6.txt").split("\r\n\r").map(|x| x.trim().to_owned()).collect();
     println!("{:?}", input);
     
     let mut count_seen: usize = 0;
