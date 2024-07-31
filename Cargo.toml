@@ -2,6 +2,7 @@
 name = "aoc2020"
 version = "0.1.0"
 edition = "2021"
+default-run = "main"
 
 [dependencies]
 itertools = "0.13.0"
