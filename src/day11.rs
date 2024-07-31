@@ -42,7 +42,8 @@ fn main() {
         .map(|line| line.chars().collect())
         .collect();
     
-    let mut input = CharGrid::new(input_vec);
+    let mut input = CharGrid::new(input_vec.clone());
+    let mut input_2 = CharGrid::new(input_vec.clone());
     
     println!("{}", input); // Use .0 to access the inner Vec for debug printing
     
@@ -106,6 +107,79 @@ fn main() {
         if !occupied_to_empty.is_empty() {
             for (y, x) in occupied_to_empty.iter() {
                 input.0[*y][*x] = 'L';
+            }
+        }
+
+        empty_to_occupied.clear(); 
+        occupied_to_empty.clear();  
+    }
+
+    // part 2
+    'main: loop {
+        for (y, row) in input_2.iter().enumerate() {
+            'chars: for (x, item) in row.iter().enumerate() {
+                let mut seen_line_o_sight: Vec<char> = vec![];
+
+                if *item == '.' {
+                    continue 'chars;
+                } 
+
+                'offsets: for (y_offset, x_offset) in offsets.iter() {
+                    let mut adj_y = y as isize;
+                    let mut adj_x = x as isize;
+
+                    'neigh: loop {
+                        adj_y += *y_offset; 
+                        adj_x += *x_offset; 
+                        if in_bounds(&input_2, adj_y, adj_x) {
+                            let neighbor = input_2[adj_y as usize][adj_x as usize];
+                            if neighbor == '#' || neighbor == 'L' {
+                                seen_line_o_sight.push(neighbor);
+                                // println!("Chair in sight. y: {y} x: {x}, item: {item}, neighbor: {neighbor}");
+                                continue 'offsets;
+                            }
+                        } else {
+                            // println!("At edge, didn't see a chair.");
+                            break 'neigh;
+                        }
+                    }
+                }
+
+                // println!("Neighbors at ({}, {}) ({}): {:?}", y, x, item, neighbors);
+                
+                let hashtags = seen_line_o_sight 
+                    .iter()
+                    .filter(|&x| *x == '#')
+                    .count();
+
+                if *item == 'L' && hashtags == 0 {
+                    empty_to_occupied.push((y, x));
+                } else if *item == '#' && hashtags >= 5 {
+                    occupied_to_empty.push((y, x))
+                } 
+            } 
+        }
+
+        println!("{}", input_2);
+
+        if empty_to_occupied.is_empty() && occupied_to_empty.is_empty() {
+            let count = input_2.iter()
+                .flat_map(|row| row.iter())
+                .filter(|&&ch| ch == '#')
+                .count();
+            println!("Seats taken: {}", count);
+            break 'main;
+        }
+
+        if !empty_to_occupied.is_empty() {
+            for (y, x) in empty_to_occupied.iter() {
+                input_2.0[*y][*x] = '#';
+            }
+        }
+
+        if !occupied_to_empty.is_empty() {
+            for (y, x) in occupied_to_empty.iter() {
+                input_2.0[*y][*x] = 'L';
             }
         }
 
