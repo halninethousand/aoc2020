@@ -6,3 +6,5 @@ default-run = "main"
 
 [dependencies]
 itertools = "0.13.0"
+regex = "1.10.6"
+ux = "0.1.6"
