@@ -1,4 +1,4 @@
-fn main() {fn main() {
+fn main() {
     let input: Vec<String> = include_str!("../../data/day5.txt").split("\r\n").map(|x| x.trim().to_owned()).collect();
     println!("{}", input.len()); 
 

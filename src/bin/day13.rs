@@ -33,7 +33,10 @@ fn main() {
         println!("counter: {}, accumulator: {} for bus: {}", counter, accumulator, bus);
     }
     
-    let min: u32 = *comparer.values().min().unwrap();
+    let min: u32 = *comparer
+        .values()
+        .min()
+        .unwrap();
 
     match find_key_by_value(&comparer, min) {
         Some(key) => println!("Key for value {:?}: {}. (earliest - timestamp) * ID: {}", min, key, (min-timestamp) * key),
