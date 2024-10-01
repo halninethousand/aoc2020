@@ -30,44 +30,23 @@ fn main() {
             let dir = &instruction[..1];
             let amount: u32 = instruction[1..].parse().unwrap();
             
-            if dir == "N" {
-                self.north_dist += amount; 
-            }
-
-            if dir == "E" {
-                self.east_dist += amount; 
-            }
-
-            if dir == "W" {
-                self.west_dist += amount; 
-            }
-
-            if dir == "S" {
-                self.south_dist += amount; 
-            }
-
-            if dir == "L" {
-                self.direction = (self.direction + amount as i32) % 360;
-            } else if dir == "R" {
-                self.direction = ((self.direction - amount as i32)+ 360) % 360;
-            }
-
-            if dir == "F" {
-                if self.direction == 90 {
-                    self.north_dist += amount;
-                }
-
-                if self.direction == 0 {
-                    self.east_dist += amount;
-                }
-
-                if self.direction == 180 {
-                    self.west_dist += amount;
-                }
-
-                if self.direction == 270 {
-                    self.south_dist += amount;
-                }
+            match dir {
+                "N" => self.north_dist += amount, 
+                "E" => self.east_dist += amount, 
+                "W" => self.west_dist += amount, 
+                "S" => self.south_dist += amount, 
+                "L" => self.direction = (self.direction + amount as i32) % 360, 
+                "R" => self.direction = ((self.direction - amount as i32)+ 360) % 360, 
+                "F" => {
+                    match self.direction {
+                        90 => self.north_dist += amount,
+                        0 => self.east_dist += amount,
+                        180 => self.west_dist += amount,
+                        270 => self.south_dist += amount,
+                        _ => panic!("unknown degress guy"),
+                    }
+                }, 
+                _ => panic!("what input is this?"),
             }
         }
 
@@ -75,84 +54,64 @@ fn main() {
             let dir = &instruction[..1];
             let amount: i32 = instruction[1..].parse().unwrap();
 
-            if dir == "N" {
-                self.waypoint.north_dist += amount;
-            }
+            match dir {
+                "N" => self.waypoint.north_dist += amount, 
+                "E" => self.waypoint.east_dist += amount, 
+                "W" => self.waypoint.west_dist += amount, 
+                "S" => self.waypoint.south_dist += amount, 
+                "L" | "R" => {
+                    // turn to cartesian coordinates
+                    let x: i32 = self.waypoint.east_dist - self.waypoint.west_dist;
+                    let y: i32 = self.waypoint.north_dist - self.waypoint.south_dist;
 
-            if dir == "E" {
-            // println!("dir: {}, amount: {}", dir, amount);
-                self.waypoint.east_dist += amount; 
-            }
+                    let new_x: i32;
+                    let new_y: i32;
 
-            if dir == "W" {
-                self.waypoint.west_dist += amount; 
-            }
+                    if let Some(&((a, b), (c, d))) = self.waypoint.rotation_matrices.get(instruction) {
+                        new_x = (a as i32 * x) + (b as i32 * y);
+                        new_y = (c as i32 * x) + (d as i32 * y);
+                    } else {
+                        panic!("Couldn't get rotation, sailor")
+                    }
+                   
+                    // zero out the current waypoint dist and apply newly rotated
+                    self.waypoint.east_dist = 0;
+                    self.waypoint.west_dist = 0;
+                    self.waypoint.south_dist = 0;
+                    self.waypoint.north_dist = 0;
 
-            if dir == "S" {
-                self.waypoint.south_dist += amount; 
-            }
+                    // Positive x becomes east_dist, negative x becomes west_dist
+                    // Positive y becomes north_dist, negative y becomes south_dist
+                    match new_x {
+                        x if x > 0 => self.waypoint.east_dist = new_x.abs(),
+                        x if x < 0 => self.waypoint.west_dist = new_x.abs(),
+                        _ => println!("No change???"),
+                    }
 
-            if dir == "L" || dir == "R" {
-                
-                // turn to cartesian coordinates
-                let x: i32 = self.waypoint.east_dist - self.waypoint.west_dist;
-                let y: i32 = self.waypoint.north_dist - self.waypoint.south_dist;
+                    match new_y {
+                        y if y > 0 => self.waypoint.north_dist = new_y.abs(),
+                        y if y < 0 => self.waypoint.south_dist = new_y.abs(),
+                        _ => println!("No change???"),
+                    }
+                },
+                "F" => {
+                    if self.waypoint.east_dist > 0 {
+                        self.east_dist += (self.waypoint.east_dist * amount) as u32;
+                    }
 
-                let new_x: i32;
-                let new_y: i32;
+                    if self.waypoint.west_dist > 0 {
+                        self.west_dist += (self.waypoint.west_dist * amount) as u32;
+                    }
 
-                if let Some(&((a, b), (c, d))) = self.waypoint.rotation_matrices.get(instruction) {
-                    new_x = (a as i32 * x) + (b as i32 * y);
-                    new_y = (c as i32 * x) + (d as i32 * y);
-                } else {
-                    panic!("Couldn't get rotation, sailor")
-                }
-               
-                // zero out the current waypoint dist and apply newly rotated
-                self.waypoint.east_dist = 0;
-                self.waypoint.west_dist = 0;
-                self.waypoint.south_dist = 0;
-                self.waypoint.north_dist = 0;
+                    if self.waypoint.north_dist > 0 {
+                        self.north_dist += (self.waypoint.north_dist * amount) as u32;
+                    }
 
-                // Positive x becomes east_dist, negative x becomes west_dist
-                // Positive y becomes north_dist, negative y becomes south_dist
-                match new_x {
-                    x if x > 0 => self.waypoint.east_dist = new_x.abs(),
-                    x if x < 0 => self.waypoint.west_dist = new_x.abs(),
-                    _ => println!("No change???"),
-                }
-
-                match new_y {
-                    y if y > 0 => self.waypoint.north_dist = new_y.abs(),
-                    y if y < 0 => self.waypoint.south_dist = new_y.abs(),
-                    _ => println!("No change???"),
-                }
-
-                // println!("WAYPOINT OF SHIP: E: {}, W: {}, N: {}, S: {}\n",
-                //     self.waypoint.east_dist,
-                //     self.waypoint.west_dist,
-                //     self.waypoint.north_dist,
-                //     self.waypoint.south_dist);
-            }
-
-            if dir == "F" {
-                if self.waypoint.east_dist > 0 {
-                    self.east_dist += (self.waypoint.east_dist * amount) as u32;
-                }
-
-                if self.waypoint.west_dist > 0 {
-                    self.west_dist += (self.waypoint.west_dist * amount) as u32;
-                }
-
-                if self.waypoint.north_dist > 0 {
-                    self.north_dist += (self.waypoint.north_dist * amount) as u32;
-                }
-
-                if self.waypoint.south_dist > 0 {
-                    self.south_dist += (self.waypoint.south_dist * amount) as u32;
-                }
-
-                // println!("SHIP: {}, {}, {}, {}\n", self.east_dist, self.west_dist, self.north_dist, self.south_dist);
+                    if self.waypoint.south_dist > 0 {
+                        self.south_dist += (self.waypoint.south_dist * amount) as u32;
+                    }
+                },
+                _ => panic!("unknown unput guy"),
             }
         }
 
